@@ -85,7 +85,24 @@ public class ImageServiceImpl implements ImageService {
     public void deleteImage(Long imageId) {
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new NotFoundException("La imagen no existe"));
+
+        try {
+            String publicId = extractPublicId(image.getUrl());
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        } catch (IOException e) {
+            throw new RuntimeException("Error al borrar la imagen física de la nube");
+        }
+
         imageRepository.delete(image);
+    }
+
+    private String extractPublicId(String url) {
+        int lastSlash = url.lastIndexOf('/');
+        int lastDot = url.lastIndexOf('.');
+        if (lastSlash != -1 && lastDot != -1 && lastDot > lastSlash) {
+            return url.substring(lastSlash + 1, lastDot);
+        }
+        return url;
     }
 
     @Override

@@ -13,5 +13,10 @@ public interface PropertyService {
     Page<PropertyListDTO> listAvailableProperties(Pageable pageable);
     Page<PropertyListDTO> searchProperties(OperationType operation, PropertyType type, Pageable pageable);
     PropertyDetailDTO getPropertyById(Long id);
+
     void deleteProperty(Long id);
+
+    Page<PropertyListDTO> listArchivedProperties(Pageable pageable);
+
+    void deletePropertyPermanently(Long id);
 }

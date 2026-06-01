@@ -62,7 +62,26 @@ public class PropertyServiceImpl implements PropertyService {
     public void deleteProperty(Long id) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
-        // Borrado lógico (cambiamos estado) o físico, como prefieras. Acá hacemos físico por ahora.
+        // Borrado lógico: pasa a estar archivada
+        property.setStatus(PropertyStatus.ARCHIVED);
+        propertyRepository.save(property);
+    }
+
+    @Override
+    public Page<PropertyListDTO> listArchivedProperties(Pageable pageable) {
+        Page<Property> page = propertyRepository.findByStatus(PropertyStatus.ARCHIVED, pageable);
+        return page.map(propertyMapper::toListDto);
+    }
+
+    @Override
+    @Transactional
+    public void deletePropertyPermanently(Long id) {
+        Property property = propertyRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
+
+        if (property.getStatus() != PropertyStatus.ARCHIVED) {
+            throw new IllegalStateException("Solo se pueden borrar permanentemente las propiedades archivadas");
+        }
         propertyRepository.delete(property);
     }
 }
