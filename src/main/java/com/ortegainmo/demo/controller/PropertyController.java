@@ -23,20 +23,17 @@ public class PropertyController {
 
     private final PropertyService propertyService;
 
-    // Alta de propiedad (Panel de administración)
     @PostMapping
     public ResponseEntity<PropertyDetailDTO> addProperty(@Valid @RequestBody PropertyRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(propertyService.addProperty(dto));
     }
 
-    // Listado público de disponibles (Paginado de a 12 para la grilla del front)
     @GetMapping
     public ResponseEntity<Page<PropertyListDTO>> listAvailableProperties(
             @PageableDefault(page = 0, size = 12, sort = "title", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(propertyService.listAvailableProperties(pageable));
     }
 
-    // Buscador principal con filtros opcionales (OperationType y PropertyType)
     @GetMapping("/search")
     public ResponseEntity<Page<PropertyListDTO>> searchProperties(
             @RequestParam(required = false) OperationType operationType,
@@ -45,16 +42,26 @@ public class PropertyController {
         return ResponseEntity.ok(propertyService.searchProperties(operationType, propertyType, pageable));
     }
 
-    // Detalle de una propiedad en particular al hacerle click
     @GetMapping("/{id}")
     public ResponseEntity<PropertyDetailDTO> getPropertyById(@PathVariable Long id) {
         return ResponseEntity.ok(propertyService.getPropertyById(id));
     }
 
-    // Baja física de la propiedad
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProperty(@PathVariable Long id) {
         propertyService.deleteProperty(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/archived")
+    public ResponseEntity<Page<PropertyListDTO>> listArchivedProperties(
+            @PageableDefault(page = 0, size = 12, sort = "title", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(propertyService.listArchivedProperties(pageable));
+    }
+
+    @DeleteMapping("/{id}/permanent")
+    public ResponseEntity<Void> deletePropertyPermanently(@PathVariable Long id) {
+        propertyService.deletePropertyPermanently(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -15,21 +15,18 @@ public class ImageController {
 
     private final ImageService imageService;
 
-    // Cambiar la foto de portada con un botón rápido
     @PatchMapping("/{imageId}/set-cover/{propertyId}")
     public ResponseEntity<Void> setAsCover(@PathVariable Long propertyId, @PathVariable Long imageId) {
         imageService.setAsCover(propertyId, imageId);
         return ResponseEntity.ok().build();
     }
 
-    // Borrar una imagen específica de la galería
     @DeleteMapping("/{imageId}")
     public ResponseEntity<Void> deleteImage(@PathVariable Long imageId) {
         imageService.deleteImage(imageId);
         return ResponseEntity.noContent().build();
     }
 
-    // Traer la galería completa de fotos asociadas a un inmueble
     @GetMapping("/property/{propertyId}")
     public ResponseEntity<List<ImageDTO>> getImagesByPropertyId(@PathVariable Long propertyId) {
         return ResponseEntity.ok(imageService.getImagesByPropertyId(propertyId));
