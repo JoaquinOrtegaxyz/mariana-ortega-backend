@@ -29,12 +29,12 @@ public interface PropertyMapper {
     // Método custom para extraer solo la portada y mandarla a la tarjeta
     default String getCoverImageUrl(List<Image> images) {
         if (images == null || images.isEmpty()) {
-            return null; // O podés poner una URL de "no-image-available.jpg" por defecto
+            return null;
         }
         return images.stream()
                 .filter(Image::getIsCover)
                 .map(Image::getUrl)
                 .findFirst()
-                .orElse(images.get(0).getUrl()); // Si se olvidó de poner portada, tira la primera
+                .orElse(images.get(0).getUrl());
     }
 }

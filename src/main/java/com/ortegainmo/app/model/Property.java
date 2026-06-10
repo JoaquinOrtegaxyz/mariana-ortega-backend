@@ -54,7 +54,6 @@ public class Property {
     @Builder.Default
     private List<Image> images = new ArrayList<>();
 
-    // Métodos para mantener la relación bidireccional limpia (GRASP)
     public void addImage(Image image) {
         images.add(image);
         image.setProperty(this);
@@ -65,7 +64,6 @@ public class Property {
         image.setProperty(null);
     }
 
-    // StringBuilder para el toString(), mostrando solo datos clave y omitiendo las listas
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Property{");

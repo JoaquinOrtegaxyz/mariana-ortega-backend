@@ -19,7 +19,7 @@ public class Characteristics {
     private Integer bedrooms;
     private Integer bathrooms;
     private Double totalArea;
-    private Double coveredArea;
+    private Double lotArea;
     private Boolean hasGarage;
     private Integer age;
 
