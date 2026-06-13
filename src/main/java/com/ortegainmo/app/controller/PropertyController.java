@@ -15,9 +15,11 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @RequestMapping("/api/properties")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class PropertyController {
 
