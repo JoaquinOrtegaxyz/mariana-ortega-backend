@@ -9,8 +9,9 @@ public record PropertyListDTO(
         Double price,
         PropertyType propertyType,
         OperationType operationType,
-        String coverImageUrl, // Solo mandamos la foto de portada para que Angular cargue rápido
+        String coverImageUrl,
         Integer bedrooms,
         Integer bathrooms,
-        String street // Para mostrar la zona rápida ("Calle Falsa 123")
+        String street,
+        String streetNumber
 ) {}
