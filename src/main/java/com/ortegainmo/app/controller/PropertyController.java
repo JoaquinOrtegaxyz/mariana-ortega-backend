@@ -13,9 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/properties")
@@ -65,5 +67,27 @@ public class PropertyController {
     public ResponseEntity<Void> deletePropertyPermanently(@PathVariable Long id) {
         propertyService.deletePropertyPermanently(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<com.ortegainmo.app.dto.property.PropertyDetailDTO> uploadImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "isCover", defaultValue = "false") Boolean isCover) {
+
+        return ResponseEntity.ok(propertyService.uploadPropertyImage(id, file, isCover));
+    }
+
+    @PutMapping("/{id}")
+    public org.springframework.http.ResponseEntity<PropertyDetailDTO> updateProperty(
+            @PathVariable Long id,
+            @RequestBody PropertyRequestDTO dto) {
+        return ResponseEntity.ok(propertyService.updateProperty(id, dto));
+    }
+
+    @PutMapping("/{id}/unarchive")
+    public ResponseEntity<Void> unarchiveProperty(@PathVariable Long id) {
+        propertyService.unarchiveProperty(id);
+        return ResponseEntity.ok().build();
     }
 }
