@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -38,12 +37,15 @@ public class PropertyController {
         return ResponseEntity.ok(propertyService.listAvailableProperties(pageable));
     }
 
+    // ACÁ ESTÁ LA MAGIA DEL BUSCADOR: Ahora recibe los dormitorios y baños y se los pasa al servicio
     @GetMapping("/search")
     public ResponseEntity<Page<PropertyListDTO>> searchProperties(
             @RequestParam(required = false) OperationType operationType,
             @RequestParam(required = false) PropertyType propertyType,
+            @RequestParam(required = false) Integer bedrooms,
+            @RequestParam(required = false) Integer bathrooms,
             @PageableDefault(page = 0, size = 12) Pageable pageable) {
-        return ResponseEntity.ok(propertyService.searchProperties(operationType, propertyType, pageable));
+        return ResponseEntity.ok(propertyService.searchProperties(operationType, propertyType, bedrooms, bathrooms, pageable));
     }
 
     @GetMapping("/{id}")
@@ -70,7 +72,7 @@ public class PropertyController {
     }
 
     @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<com.ortegainmo.app.dto.property.PropertyDetailDTO> uploadImage(
+    public ResponseEntity<PropertyDetailDTO> uploadImage(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "isCover", defaultValue = "false") Boolean isCover) {
@@ -79,7 +81,7 @@ public class PropertyController {
     }
 
     @PutMapping("/{id}")
-    public org.springframework.http.ResponseEntity<PropertyDetailDTO> updateProperty(
+    public ResponseEntity<PropertyDetailDTO> updateProperty(
             @PathVariable Long id,
             @RequestBody PropertyRequestDTO dto) {
         return ResponseEntity.ok(propertyService.updateProperty(id, dto));

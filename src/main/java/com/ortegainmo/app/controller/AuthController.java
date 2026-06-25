@@ -1,6 +1,7 @@
 package com.ortegainmo.app.controller;
 
 import com.ortegainmo.app.dto.login.AuthResponseDTO;
+import com.ortegainmo.app.dto.login.ChangePasswordDTO;
 import com.ortegainmo.app.dto.login.LoginRequestDTO;
 import com.ortegainmo.app.dto.login.RegisterRequestDTO;
 import com.ortegainmo.app.repository.UserRepository;
@@ -51,5 +52,21 @@ public class AuthController {
         String token = jwtService.getToken(user);
 
         return ResponseEntity.ok(new AuthResponseDTO(token));
+    }
+
+
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDTO dto) {
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(dto.currentPassword(), user.getPassword())) {
+            return ResponseEntity.badRequest().body("La contraseña actual es incorrecta");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.newPassword()));
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Contraseña actualizada con éxito");
     }
 }

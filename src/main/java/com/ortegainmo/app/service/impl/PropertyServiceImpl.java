@@ -51,8 +51,9 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public Page<PropertyListDTO> searchProperties(OperationType operation, PropertyType type, Pageable pageable) {
-        Page<Property> page = propertyRepository.searchProperties(operation, type, pageable);
+    public Page<PropertyListDTO> searchProperties(OperationType operation, PropertyType type, Integer bedrooms, Integer bathrooms, Pageable pageable) {
+        // En vez de usar el método viejo, llamamos a la query avanzada que armamos en el Repo
+        Page<Property> page = propertyRepository.searchAdvanced(operation, type, bedrooms, bathrooms, pageable);
         return page.map(propertyMapper::toListDto);
     }
 
