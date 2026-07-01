@@ -13,6 +13,7 @@ import com.ortegainmo.app.model.Property;
 import com.ortegainmo.app.repository.ImageRepository;
 import com.ortegainmo.app.repository.PropertyRepository;
 import com.ortegainmo.app.service.CloudinaryService;
+import com.ortegainmo.app.service.ImageService;
 import com.ortegainmo.app.service.PropertyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,7 @@ public class PropertyServiceImpl implements PropertyService {
     private final PropertyMapper propertyMapper;
     private final CloudinaryService cloudinaryService;
     private final ImageRepository imageRepository;
+    private final ImageService imageService;
 
     @Override
     @Transactional
@@ -89,6 +91,14 @@ public class PropertyServiceImpl implements PropertyService {
         if (property.getStatus() != PropertyStatus.ARCHIVED) {
             throw new IllegalStateException("Solo se pueden borrar permanentemente las propiedades archivadas");
         }
+
+        // AGREGAMOS ESTO: Antes de borrar la propiedad, recorremos sus imágenes y las borramos de Cloudinary
+        if (property.getImages() != null && !property.getImages().isEmpty()) {
+            for (Image image : property.getImages()) {
+                imageService.deleteImage(image.getId());
+            }
+        }
+
         propertyRepository.delete(property);
     }
 
@@ -140,7 +150,11 @@ public class PropertyServiceImpl implements PropertyService {
         if(property.getCharacteristics() != null && dto.characteristics() != null) {
             property.getCharacteristics().setBedrooms(dto.characteristics().bedrooms());
             property.getCharacteristics().setBathrooms(dto.characteristics().bathrooms());
+            property.getCharacteristics().setTotalArea(dto.characteristics().totalArea());
+            property.getCharacteristics().setLotArea(dto.characteristics().lotArea());
         }
+
+
 
         return propertyMapper.toDetailDto(propertyRepository.save(property));
     }
