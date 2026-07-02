@@ -5,6 +5,7 @@ import com.ortegainmo.app.dto.property.PropertyListDTO;
 import com.ortegainmo.app.dto.property.PropertyRequestDTO;
 import com.ortegainmo.app.enums.OperationType;
 import com.ortegainmo.app.enums.PropertyType;
+import com.ortegainmo.app.enums.Zone;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,8 +15,7 @@ public interface PropertyService {
 
     Page<PropertyListDTO> listAvailableProperties(Pageable pageable);
 
-    // ACÁ LE AGREGAMOS LOS DORMITORIOS Y BAÑOS
-    Page<PropertyListDTO> searchProperties(OperationType operation, PropertyType type, Integer bedrooms, Integer bathrooms, Pageable pageable);
+    Page<PropertyListDTO> searchProperties(OperationType operation, PropertyType type, Zone zone, Integer bedrooms, Integer bathrooms, Pageable pageable);
 
     PropertyDetailDTO getPropertyById(Long id);
     void deleteProperty(Long id);

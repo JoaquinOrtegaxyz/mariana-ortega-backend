@@ -5,6 +5,7 @@ import com.ortegainmo.app.dto.property.PropertyListDTO;
 import com.ortegainmo.app.dto.property.PropertyRequestDTO;
 import com.ortegainmo.app.enums.OperationType;
 import com.ortegainmo.app.enums.PropertyType;
+import com.ortegainmo.app.enums.Zone;
 import com.ortegainmo.app.service.PropertyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +43,11 @@ public class PropertyController {
     public ResponseEntity<Page<PropertyListDTO>> searchProperties(
             @RequestParam(required = false) OperationType operationType,
             @RequestParam(required = false) PropertyType propertyType,
+            @RequestParam(required = false) Zone zone,
             @RequestParam(required = false) Integer bedrooms,
             @RequestParam(required = false) Integer bathrooms,
             @PageableDefault(page = 0, size = 12) Pageable pageable) {
-        return ResponseEntity.ok(propertyService.searchProperties(operationType, propertyType, bedrooms, bathrooms, pageable));
+        return ResponseEntity.ok(propertyService.searchProperties(operationType, propertyType, zone, bedrooms, bathrooms, pageable));
     }
 
     @GetMapping("/{id}")

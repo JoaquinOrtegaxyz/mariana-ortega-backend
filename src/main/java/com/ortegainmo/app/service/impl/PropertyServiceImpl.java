@@ -6,6 +6,7 @@ import com.ortegainmo.app.dto.property.PropertyRequestDTO;
 import com.ortegainmo.app.enums.OperationType;
 import com.ortegainmo.app.enums.PropertyStatus;
 import com.ortegainmo.app.enums.PropertyType;
+import com.ortegainmo.app.enums.Zone;
 import com.ortegainmo.app.exception.NotFoundException;
 import com.ortegainmo.app.mapper.PropertyMapper;
 import com.ortegainmo.app.model.Image;
@@ -53,9 +54,8 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public Page<PropertyListDTO> searchProperties(OperationType operation, PropertyType type, Integer bedrooms, Integer bathrooms, Pageable pageable) {
-        // En vez de usar el método viejo, llamamos a la query avanzada que armamos en el Repo
-        Page<Property> page = propertyRepository.searchAdvanced(operation, type, bedrooms, bathrooms, pageable);
+    public Page<PropertyListDTO> searchProperties(OperationType operation, PropertyType type, Zone zone, Integer bedrooms, Integer bathrooms, Pageable pageable) {
+        Page<Property> page = propertyRepository.searchAdvanced(operation, type, zone, bedrooms, bathrooms, pageable);
         return page.map(propertyMapper::toListDto);
     }
 
@@ -71,7 +71,6 @@ public class PropertyServiceImpl implements PropertyService {
     public void deleteProperty(Long id) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
-        // Borrado lógico: pasa a estar archivada
         property.setStatus(PropertyStatus.ARCHIVED);
         propertyRepository.save(property);
     }
@@ -92,7 +91,6 @@ public class PropertyServiceImpl implements PropertyService {
             throw new IllegalStateException("Solo se pueden borrar permanentemente las propiedades archivadas");
         }
 
-        // AGREGAMOS ESTO: Antes de borrar la propiedad, recorremos sus imágenes y las borramos de Cloudinary
         if (property.getImages() != null && !property.getImages().isEmpty()) {
             for (Image image : property.getImages()) {
                 imageService.deleteImage(image.getId());
@@ -164,7 +162,6 @@ public class PropertyServiceImpl implements PropertyService {
     public void unarchiveProperty(Long id) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
-        // Pasa de ARCHIVED a AVAILABLE de nuevo
         property.setStatus(PropertyStatus.AVAILABLE);
         propertyRepository.save(property);
     }

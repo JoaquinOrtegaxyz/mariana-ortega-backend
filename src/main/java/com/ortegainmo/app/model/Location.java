@@ -1,5 +1,6 @@
 package com.ortegainmo.app.model;
 
+import com.ortegainmo.app.enums.Zone;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,8 +21,11 @@ public class Location {
     private String street;
 
     @Column(nullable = false)
-    private String streetNumber; // altura
+    private String streetNumber;
+
+    @Enumerated(EnumType.STRING)
+    private Zone zone;
 
     private String floor;
-    private String apartment; // depto
+    private String apartment;
 }
