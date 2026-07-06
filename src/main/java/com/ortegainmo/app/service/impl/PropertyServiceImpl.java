@@ -46,17 +46,14 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public Page<PropertyListDTO> listAvailableProperties(Pageable pageable) {
-        Page<Property> page = propertyRepository.findByStatus(PropertyStatus.AVAILABLE, pageable);
-        if(page.isEmpty()){
-            throw new NotFoundException("No hay propiedades publicadas");
-        }
-        return page.map(propertyMapper::toListDto);
+        Page<Property> propertiesPage = propertyRepository.findByStatus(PropertyStatus.AVAILABLE, pageable);
+        return propertiesPage.map(propertyMapper::toListDto);
     }
 
     @Override
-    public Page<PropertyListDTO> searchProperties(OperationType operation, PropertyType type, Zone zone, Integer bedrooms, Integer bathrooms, Pageable pageable) {
-        Page<Property> page = propertyRepository.searchAdvanced(operation, type, zone, bedrooms, bathrooms, pageable);
-        return page.map(propertyMapper::toListDto);
+    public Page<PropertyListDTO> searchProperties(OperationType operationType, PropertyType propertyType, Zone zone, Integer bedrooms, Integer bathrooms, Pageable pageable) {
+        Page<Property> propertiesPage = propertyRepository.searchAdvanced(operationType, propertyType, zone, bedrooms, bathrooms, pageable);
+        return propertiesPage.map(propertyMapper::toListDto);
     }
 
     @Override
@@ -77,8 +74,8 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public Page<PropertyListDTO> listArchivedProperties(Pageable pageable) {
-        Page<Property> page = propertyRepository.findByStatus(PropertyStatus.ARCHIVED, pageable);
-        return page.map(propertyMapper::toListDto);
+        Page<Property> propertiesPage = propertyRepository.findByStatus(PropertyStatus.ARCHIVED, pageable);
+        return propertiesPage.map(propertyMapper::toListDto);
     }
 
     @Override
