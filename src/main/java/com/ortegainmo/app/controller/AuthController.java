@@ -28,18 +28,18 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
-        User user = User.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .build();
-
-        userRepository.save(user);
-
-        String token = jwtService.getToken(user);
-        return ResponseEntity.ok(new AuthResponseDTO(token));
-    }
+//    @PostMapping("/register")
+//    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
+//        User user = User.builder()
+//                .email(request.email())
+//                .password(passwordEncoder.encode(request.password()))
+//                .build();
+//
+//        userRepository.save(user);
+//
+//        String token = jwtService.getToken(user);
+//        return ResponseEntity.ok(new AuthResponseDTO(token));
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {

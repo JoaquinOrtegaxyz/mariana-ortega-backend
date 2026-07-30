@@ -15,26 +15,4 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
-    @Bean
-    public CommandLineRunner initAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        return args -> {
-            if (userRepository.count() == 0) {
-                User admin = new User();
-
-                admin.setEmail("mortegainmo@gmail.com");
-
-                admin.setPassword(passwordEncoder.encode("Mariana123!"));
-
-
-                userRepository.save(admin);
-
-                User admin2 = new User();
-
-                admin2.setEmail("alfredofarisanonec@gmail.com");
-
-                admin2.setPassword(passwordEncoder.encode("Yamil123!"));
-                userRepository.save(admin2);
-            }
-        };
-    }
 }
