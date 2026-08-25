@@ -17,6 +17,8 @@ import com.ortegainmo.app.service.CloudinaryService;
 import com.ortegainmo.app.service.ImageService;
 import com.ortegainmo.app.service.PropertyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,27 +38,30 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public PropertyDetailDTO addProperty(PropertyRequestDTO dto) {
         Property property = propertyMapper.toEntity(dto);
-        // Por defecto arranca disponible
         property.setStatus(PropertyStatus.AVAILABLE);
         property = propertyRepository.save(property);
         return propertyMapper.toDetailDto(property);
     }
 
     @Override
+    @Cacheable(value = "availableProperties", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<PropertyListDTO> listAvailableProperties(Pageable pageable) {
         Page<Property> propertiesPage = propertyRepository.findByStatus(PropertyStatus.AVAILABLE, pageable);
         return propertiesPage.map(propertyMapper::toListDto);
     }
 
     @Override
+    @Cacheable(value = "propertySearchResults", key = "{#operationType, #propertyType, #zone, #bedrooms, #bathrooms, #pageable.pageNumber, #pageable.pageSize}")
     public Page<PropertyListDTO> searchProperties(OperationType operationType, PropertyType propertyType, Zone zone, Integer bedrooms, Integer bathrooms, Pageable pageable) {
         Page<Property> propertiesPage = propertyRepository.searchAdvanced(operationType, propertyType, zone, bedrooms, bathrooms, pageable);
         return propertiesPage.map(propertyMapper::toListDto);
     }
 
     @Override
+    @Cacheable(value = "propertyDetail", key = "#id")
     public PropertyDetailDTO getPropertyById(Long id) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
@@ -65,6 +70,7 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public void deleteProperty(Long id) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
@@ -80,6 +86,7 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public void deletePropertyPermanently(Long id) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
@@ -97,9 +104,9 @@ public class PropertyServiceImpl implements PropertyService {
         propertyRepository.delete(property);
     }
 
-
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public PropertyDetailDTO uploadPropertyImage(Long id, MultipartFile file, Boolean isCover) {
         try {
             Property property = propertyRepository.findById(id)
@@ -124,43 +131,39 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public PropertyDetailDTO updateProperty(Long id, PropertyRequestDTO dto) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
 
-        // Actualizamos los datos principales
         property.setTitle(dto.title());
         property.setDescription(dto.description());
         property.setPrice(dto.price());
         property.setPropertyType(dto.propertyType());
         property.setOperationType(dto.operationType());
 
-        // Actualizamos Ubicación
-        if(property.getLocation() != null && dto.location() != null) {
+        if (property.getLocation() != null && dto.location() != null) {
             property.getLocation().setStreet(dto.location().street());
             property.getLocation().setStreetNumber(dto.location().streetNumber());
         }
 
-        // Actualizamos Características
-        if(property.getCharacteristics() != null && dto.characteristics() != null) {
+        if (property.getCharacteristics() != null && dto.characteristics() != null) {
             property.getCharacteristics().setBedrooms(dto.characteristics().bedrooms());
             property.getCharacteristics().setBathrooms(dto.characteristics().bathrooms());
             property.getCharacteristics().setTotalArea(dto.characteristics().totalArea());
             property.getCharacteristics().setLotArea(dto.characteristics().lotArea());
         }
 
-
-
         return propertyMapper.toDetailDto(propertyRepository.save(property));
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public void unarchiveProperty(Long id) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
         property.setStatus(PropertyStatus.AVAILABLE);
         propertyRepository.save(property);
     }
-
 }
