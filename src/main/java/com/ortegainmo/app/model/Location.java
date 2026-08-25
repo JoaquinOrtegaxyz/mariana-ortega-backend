@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "locations")
+@Table(name = "locations", indexes = {@Index(name = "idx_locations_zone", columnList = "zone")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,3 +29,4 @@ public class Location {
     private String floor;
     private String apartment;
 }
+

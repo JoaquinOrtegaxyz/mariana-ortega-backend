@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "properties")
+@Table(name = "properties", indexes = {@Index(name = "idx_properties_status", columnList = "status"), @Index(name = "idx_properties_operation_type", columnList = "operationType"), @Index(name = "idx_properties_property_type", columnList = "propertyType"), @Index(name = "idx_properties_location_id", columnList = "location_id"), @Index(name = "idx_properties_features_id", columnList = "features_id")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -75,3 +75,4 @@ public class Property {
         return sb.toString();
     }
 }
+
