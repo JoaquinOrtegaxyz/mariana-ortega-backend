@@ -14,4 +14,6 @@ public interface ImageService {
     List<ImageDTO> getImagesByPropertyId(Long propertyId);
 
     com.ortegainmo.app.dto.image.ImageDTO uploadImage(org.springframework.web.multipart.MultipartFile file, Long propertyId);
+
+    List<ImageDTO> uploadMultipleImages(List<org.springframework.web.multipart.MultipartFile> files, Long propertyId);
 }

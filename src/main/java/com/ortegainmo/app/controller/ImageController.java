@@ -39,4 +39,12 @@ public class ImageController {
         return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
                 .body(imageService.uploadImage(file, propertyId));
     }
+
+    @PostMapping("/upload-multiple/{propertyId}")
+    public ResponseEntity<List<ImageDTO>> uploadMultipleImages(
+            @PathVariable Long propertyId,
+            @RequestParam("files") List<org.springframework.web.multipart.MultipartFile> files) {
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
+                .body(imageService.uploadMultipleImages(files, propertyId));
+    }
 }

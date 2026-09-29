@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,6 +60,42 @@ public class ImageServiceImpl implements ImageService {
         } catch (IOException e) {
             throw new RuntimeException("Error al subir la imagen a la nube");
         }
+    }
+
+    @Override
+    @Transactional
+    public List<ImageDTO> uploadMultipleImages(List<MultipartFile> files, Long propertyId) {
+        Property property = propertyRepository.findById(propertyId)
+                .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
+
+        boolean hasCover = !imageRepository.findByPropertyId(propertyId).isEmpty();
+        List<Image> savedImages = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) continue;
+            try {
+                Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+                String imageUrl = uploadResult.get("secure_url").toString();
+                boolean isCover = !hasCover;
+                if (isCover) {
+                    hasCover = true;
+                }
+
+                Image image = Image.builder()
+                        .url(imageUrl)
+                        .isCover(isCover)
+                        .property(property)
+                        .build();
+
+                savedImages.add(imageRepository.save(image));
+            } catch (IOException e) {
+                throw new RuntimeException("Error al subir una de las imágenes a la nube: " + e.getMessage());
+            }
+        }
+
+        return savedImages.stream()
+                .map(img -> new ImageDTO(img.getId(), img.getUrl(), img.getIsCover()))
+                .collect(Collectors.toList());
     }
 
     @Override

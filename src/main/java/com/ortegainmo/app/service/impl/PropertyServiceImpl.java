@@ -54,9 +54,9 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    @Cacheable(value = "propertySearchResults", key = "{#operationType, #propertyType, #zone, #bedrooms, #bathrooms, #pageable.pageNumber, #pageable.pageSize}")
-    public Page<PropertyListDTO> searchProperties(OperationType operationType, PropertyType propertyType, Zone zone, Integer bedrooms, Integer bathrooms, Pageable pageable) {
-        Page<Property> propertiesPage = propertyRepository.searchAdvanced(operationType, propertyType, zone, bedrooms, bathrooms, pageable);
+    @Cacheable(value = "propertySearchResults", key = "{#operationType, #propertyType, #zone, #bedrooms, #bathrooms, #minPrice, #maxPrice, #pageable.pageNumber, #pageable.pageSize}")
+    public Page<PropertyListDTO> searchProperties(OperationType operationType, PropertyType propertyType, Zone zone, Integer bedrooms, Integer bathrooms, Double minPrice, Double maxPrice, Pageable pageable) {
+        Page<Property> propertiesPage = propertyRepository.searchAdvanced(operationType, propertyType, zone, bedrooms, bathrooms, minPrice, maxPrice, pageable);
         return propertiesPage.map(propertyMapper::toListDto);
     }
 
@@ -142,16 +142,29 @@ public class PropertyServiceImpl implements PropertyService {
         property.setPropertyType(dto.propertyType());
         property.setOperationType(dto.operationType());
 
-        if (property.getLocation() != null && dto.location() != null) {
+        if (dto.location() != null) {
+            if (property.getLocation() == null) {
+                property.setLocation(new com.ortegainmo.app.model.Location());
+            }
             property.getLocation().setStreet(dto.location().street());
             property.getLocation().setStreetNumber(dto.location().streetNumber());
+            property.getLocation().setZone(dto.location().zone());
+            property.getLocation().setFloor(dto.location().floor());
+            property.getLocation().setApartment(dto.location().apartment());
         }
 
-        if (property.getCharacteristics() != null && dto.characteristics() != null) {
+        if (dto.characteristics() != null) {
+            if (property.getCharacteristics() == null) {
+                property.setCharacteristics(new com.ortegainmo.app.model.Characteristics());
+            }
             property.getCharacteristics().setBedrooms(dto.characteristics().bedrooms());
             property.getCharacteristics().setBathrooms(dto.characteristics().bathrooms());
             property.getCharacteristics().setTotalArea(dto.characteristics().totalArea());
             property.getCharacteristics().setLotArea(dto.characteristics().lotArea());
+            property.getCharacteristics().setHasGarage(dto.characteristics().hasGarage());
+            property.getCharacteristics().setAge(dto.characteristics().age());
+            property.getCharacteristics().setLatitude(dto.characteristics().latitude());
+            property.getCharacteristics().setLongitude(dto.characteristics().longitude());
         }
 
         return propertyMapper.toDetailDto(propertyRepository.save(property));

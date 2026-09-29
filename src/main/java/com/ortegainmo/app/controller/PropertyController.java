@@ -50,8 +50,10 @@ public class PropertyController {
             @RequestParam(required = false) Zone zone,
             @RequestParam(required = false) Integer bedrooms,
             @RequestParam(required = false) Integer bathrooms,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
             @PageableDefault(page = 0, size = 12) Pageable pageable) {
-        return ResponseEntity.ok(propertyService.searchProperties(operationType, propertyType, zone, bedrooms, bathrooms, pageable));
+        return ResponseEntity.ok(propertyService.searchProperties(operationType, propertyType, zone, bedrooms, bathrooms, minPrice, maxPrice, pageable));
     }
 
     @GetMapping("/{id}")
