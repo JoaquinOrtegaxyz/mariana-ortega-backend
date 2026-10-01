@@ -10,6 +10,7 @@ import com.ortegainmo.app.repository.ImageRepository;
 import com.ortegainmo.app.repository.PropertyRepository;
 import com.ortegainmo.app.service.ImageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public ImageDTO uploadImage(MultipartFile file, Long propertyId) {
         // 1. Validamos que la propiedad exista en la DB
         Property property = propertyRepository.findById(propertyId)
@@ -64,6 +66,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public List<ImageDTO> uploadMultipleImages(List<MultipartFile> files, Long propertyId) {
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new NotFoundException("La propiedad no existe"));
@@ -100,6 +103,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public void setAsCover(Long propertyId, Long imageId) {
         List<Image> propertyImages = imageRepository.findByPropertyId(propertyId);
         if (propertyImages.isEmpty()) throw new NotFoundException("No hay imágenes");
@@ -119,6 +123,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"availableProperties", "propertySearchResults", "propertyDetail"}, allEntries = true)
     public void deleteImage(Long imageId) {
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new NotFoundException("La imagen no existe"));

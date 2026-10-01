@@ -12,7 +12,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface PropertyRepository extends JpaRepository<Property, Long> {
+
+    @Override
+    @EntityGraph(attributePaths = {"location", "characteristics", "images"})
+    Optional<Property> findById(Long id);
 
     @EntityGraph(attributePaths = {"location", "characteristics", "images"})
     Page<Property> findByStatus(PropertyStatus status, Pageable pageable);
